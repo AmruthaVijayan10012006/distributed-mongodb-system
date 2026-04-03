@@ -4,6 +4,13 @@ from config import MONGO_URIS
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return {
+        "message": "Distributed MongoDB System API is running!",
+        "routes": ["/insert", "/get/<id>", "/update/<id>", "/delete/<id>"]
+    }
+
 # Connect to MongoDB nodes
 clients = {node: MongoClient(uri) for node, uri in MONGO_URIS.items()}
 dbs = {node: clients[node].get_database() for node in clients}
@@ -87,4 +94,7 @@ def delete(user_id):
     return jsonify({"message": "Deleted successfully"})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))  # Render sets PORT automatically
+    app.run(host='0.0.0.0', port=port, debug=True)
+    
