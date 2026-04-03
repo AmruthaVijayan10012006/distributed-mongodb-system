@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Distributed MongoDB Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Distributed MongoDB Dashboard</h1>
+
+    <div class="form-section">
+        <h2>Insert User</h2>
+        <form id="insertForm">
+            <input type="number" name="id" placeholder="User ID" required>
+            <input type="text" name="name" placeholder="Name" required>
+            <button type="submit">Insert</button>
+        </form>
+    </div>
+
+    <div class="form-section">
+        <h2>Get User</h2>
+        <form id="getForm">
+            <input type="number" name="id" placeholder="User ID" required>
+            <button type="submit">Get</button>
+        </form>
+    </div>
+
+    <div class="form-section">
+        <h2>Update User</h2>
+        <form id="updateForm">
+            <input type="number" name="id" placeholder="User ID" required>
+            <input type="text" name="name" placeholder="New Name" required>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+
+    <div class="form-section">
+        <h2>Delete User</h2>
+        <form id="deleteForm">
+            <input type="number" name="id" placeholder="User ID" required>
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+
+    <h2>Output</h2>
+    <pre id="output"></pre>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,15 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from pymongo import MongoClient
 from config import MONGO_URIS
+import os
 
 app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return {
-        "message": "Distributed MongoDB System API is running!",
-        "routes": ["/insert", "/get/<id>", "/update/<id>", "/delete/<id>"]
-    }
 
 # Connect to MongoDB nodes
 clients = {node: MongoClient(uri) for node, uri in MONGO_URIS.items()}
@@ -23,12 +17,24 @@ def get_replica_node(primary):
     nodes.remove(primary)
     return nodes[0]
 
+# 🔹 HOME / API STATUS
+@app.route('/')
+def home():
+    return {
+        "message": "Distributed MongoDB System API is running!",
+        "routes": ["/insert", "/get/<id>", "/update/<id>", "/delete/<id>", "/dashboard"]
+    }
+
+# 🔹 DASHBOARD
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
 # 🔹 INSERT
 @app.route('/insert', methods=['POST'])
 def insert():
     data = request.json
     user_id = data['id']
-
     primary = get_primary_node(user_id)
     replica = get_replica_node(primary)
 
@@ -43,19 +49,11 @@ def insert():
 @app.route('/get/<int:user_id>', methods=['GET'])
 def get(user_id):
     primary = get_primary_node(user_id)
+    result = dbs[primary].users.find_one({"id": user_id}, {"_id": 0})
 
-    result = dbs[primary].users.find_one(
-        {"id": user_id},
-        {"_id": 0}
-    )
-
-    # fallback to replica if not found
     if not result:
         replica = get_replica_node(primary)
-        result = dbs[replica].users.find_one(
-            {"id": user_id},
-            {"_id": 0}
-        )
+        result = dbs[replica].users.find_one({"id": user_id}, {"_id": 0})
 
     if result:
         return jsonify(result)
@@ -66,19 +64,11 @@ def get(user_id):
 @app.route('/update/<int:user_id>', methods=['PUT'])
 def update(user_id):
     data = request.json
-
     primary = get_primary_node(user_id)
     replica = get_replica_node(primary)
 
-    dbs[primary].users.update_one(
-        {"id": user_id},
-        {"$set": data}
-    )
-
-    dbs[replica].users.update_one(
-        {"id": user_id},
-        {"$set": data}
-    )
+    dbs[primary].users.update_one({"id": user_id}, {"$set": data})
+    dbs[replica].users.update_one({"id": user_id}, {"$set": data})
 
     return jsonify({"message": "Updated successfully"})
 
@@ -94,7 +84,6 @@ def delete(user_id):
     return jsonify({"message": "Deleted successfully"})
 
 if __name__ == '__main__':
-    import os
-    port = int(os.environ.get("PORT", 5000))  # Render sets PORT automatically
+    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
     
