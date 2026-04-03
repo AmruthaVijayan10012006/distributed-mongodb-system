@@ -49,7 +49,17 @@
         </div>
 
         <h2>Output</h2>
-        <pre id="output"></pre>
+        <div id="outputCard" class="output-card" style="display:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody id="outputTableBody"></tbody>
+            </table>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>

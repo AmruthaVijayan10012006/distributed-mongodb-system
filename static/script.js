@@ -1,63 +1,70 @@
-const output = document.getElementById('output');
+const insertForm = document.getElementById("insertForm");
+const getForm = document.getElementById("getForm");
+const updateForm = document.getElementById("updateForm");
+const deleteForm = document.getElementById("deleteForm");
 
-const postData = async (url, data) => {
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
-    return res.json();
-};
+function showOutput(data) {
+    const outputCard = document.getElementById("outputCard");
+    const tableBody = document.getElementById("outputTableBody");
+    tableBody.innerHTML = "";
 
-const putData = async (url, data) => {
-    const res = await fetch(url, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
-    return res.json();
-};
+    if (data.id && data.name !== undefined) {
+        const row = document.createElement("tr");
+        const idCell = document.createElement("td");
+        idCell.textContent = data.id;
+        const nameCell = document.createElement("td");
+        nameCell.textContent = data.name;
+        row.appendChild(idCell);
+        row.appendChild(nameCell);
+        tableBody.appendChild(row);
+    } else {
+        tableBody.innerHTML = `<tr><td colspan="2">${data.message}</td></tr>`;
+    }
+    outputCard.style.display = "block";
+}
 
-const deleteData = async (url) => {
-    const res = await fetch(url, { method: 'DELETE' });
-    return res.json();
-};
-
-const getData = async (url) => {
-    const res = await fetch(url);
-    return res.json();
-};
-
-// Insert
-document.getElementById('insertForm').addEventListener('submit', async (e) => {
+insertForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = e.target.id.value;
     const name = e.target.name.value;
-    const data = await postData('/insert', {id: parseInt(id), name});
-    output.innerText = JSON.stringify(data, null, 2);
+
+    const res = await fetch("/insert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: parseInt(id), name })
+    });
+    const data = await res.json();
+    showOutput(data);
 });
 
-// Get
-document.getElementById('getForm').addEventListener('submit', async (e) => {
+getForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = e.target.id.value;
-    const data = await getData(`/get/${id}`);
-    output.innerText = JSON.stringify(data, null, 2);
+
+    const res = await fetch(`/get/${id}`);
+    const data = await res.json();
+    showOutput(data);
 });
 
-// Update
-document.getElementById('updateForm').addEventListener('submit', async (e) => {
+updateForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = e.target.id.value;
     const name = e.target.name.value;
-    const data = await putData(`/update/${id}`, {name});
-    output.innerText = JSON.stringify(data, null, 2);
+
+    const res = await fetch(`/update/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+    });
+    const data = await res.json();
+    showOutput(data);
 });
 
-// Delete
-document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+deleteForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = e.target.id.value;
-    const data = await deleteData(`/delete/${id}`);
-    output.innerText = JSON.stringify(data, null, 2);
+
+    const res = await fetch(`/delete/${id}`, { method: "DELETE" });
+    const data = await res.json();
+    showOutput(data);
 });

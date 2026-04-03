@@ -74,12 +74,32 @@ button.update-btn:hover { background-color: #e0a800; }
 button.delete-btn { background-color: #dc3545; }
 button.delete-btn:hover { background-color: #c82333; }
 
-pre#output {
-    background: #272822;
-    color: #f8f8f2;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: left;
-    overflow-x: auto;
-    max-height: 300px;
+.output-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 400px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.output-card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.output-card th, .output-card td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-size: 16px;
+}
+
+.output-card th {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.output-card td {
+    background-color: #f9f9f9;
 }
